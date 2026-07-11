@@ -1,0 +1,12 @@
+/target/
+/AGENTS.md
+
+# Local capture output and analysis databases
+*.pcapng
+*.ndjson
+*.duckdb
+
+# Local/editor files
+.DS_Store
+.idea/
+.vscode/
