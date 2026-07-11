@@ -35,6 +35,26 @@ GROUP BY interface, protocol, direction
 ORDER BY wire_bytes DESC;
 ```
 
+### TCP anomaly breakdown
+```sql
+SELECT
+    connection_id,
+    duplicate_ack_packets,
+    retransmitted_segment_packets,
+    out_of_order_packets,
+    zero_window_probe_packets,
+    packet_count
+FROM connection_summary
+WHERE duplicate_ack_packets > 0
+   OR retransmitted_segment_packets > 0
+   OR out_of_order_packets > 0
+   OR zero_window_probe_packets > 0
+ORDER BY (duplicate_ack_packets + retransmitted_segment_packets
+          + out_of_order_packets + zero_window_probe_packets) DESC,
+         packet_count DESC
+LIMIT 25;
+```
+
 ### Top remote servers by traffic volume
 ```sql
 SELECT
@@ -66,7 +86,10 @@ SELECT
     format_bytes(uploaded_bytes::BIGINT) AS uploaded,
     format_bytes(downloaded_bytes::BIGINT) AS downloaded,
     duration_ms,
-    retransmitted_segment_packets
+    duplicate_ack_packets,
+    retransmitted_segment_packets,
+    out_of_order_packets,
+    zero_window_probe_packets
 FROM connection_summary
 ORDER BY payload_bytes DESC
 LIMIT 25;
